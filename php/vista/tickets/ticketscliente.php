@@ -1,7 +1,6 @@
 <?php 
 include '../banner.php';
 include '../../logico/conexion.php'; 
-
 $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
 
 // Obtener los tickets del usuario con la prioridad y estado, excluyendo los estados "Cancelado", "Cerrado" y "Resuelto"
