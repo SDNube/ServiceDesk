@@ -4,7 +4,7 @@ session_start(); // Iniciar la sesión
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_rol'])) {
     // Redirigir a la página de inicio de sesión o mostrar un mensaje de error
-    header("Location: ../logico/usuarios/login.php");
+    header("Location: ../../../logico/usuarios/login.php");
     exit();
 }
 
@@ -42,7 +42,7 @@ $nombreCompleto = $_SESSION['nombreCompleto']; // Asegúrate de que 'username' e
                         <a class="nav-link" href="/ServiceDesk/php/vista/usuarios.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Responsivas</a>
+                        <a class="nav-link" href="/ServiceDesk/php/vista/equipo/altaEquipo.php">Equipo de computo</a>
                     </li>
                 <?php endif; ?>
 
@@ -51,7 +51,7 @@ $nombreCompleto = $_SESSION['nombreCompleto']; // Asegúrate de que 'username' e
                         <a class="nav-link" href="/ServiceDesk/php/vista/tickets/ticketscliente.php">Tickets de soporte</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Contacto</a>
+                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/test.php">Contacto</a>
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">

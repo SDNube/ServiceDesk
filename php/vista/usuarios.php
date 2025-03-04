@@ -1,7 +1,9 @@
 <?php 
 include '../logico/conexion.php'; 
 
-// Verifica si hay datos en POST
+$sql = "SELECT nombre, paterno, materno, cumpleanos, departamento, telefono, correo, usuario FROM datos_usuarios";
+$result = $conn->query($sql); // Ejecutar la consulta
+
 $abrirModal = !empty($_POST);
 ?>
 <!DOCTYPE html>
