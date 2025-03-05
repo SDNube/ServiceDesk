@@ -3,6 +3,7 @@
 
 include '../../logico/conexion.php'; 
 include '../../modales/equipo/modalAltaEquipo.php';
+include '../../modales/equipo/modalAsignarEquipo.php';
 
 // Consulta para obtener los equipos y su tipo asociado
 $sqlComputo = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
@@ -39,6 +40,9 @@ $resultAccesorio = $conn->query($sqlAccesorio);
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script src="../../../js/asignarEquipo.js"></script>
+
 </head>
 <body>
 
@@ -47,9 +51,7 @@ $resultAccesorio = $conn->query($sqlAccesorio);
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#equipoModal">
             Agregar Equipo
         </button>
-        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#equipoModal">
-            Asignar equipo
-        </button>
+        
         <p></p>
         <ul class="nav nav-tabs" id="formTabs" role="tablist">
             <li class="nav-item">
@@ -68,7 +70,7 @@ $resultAccesorio = $conn->query($sqlAccesorio);
         
             <!-- Formulario de Equipo de Cómputo -->
             <div class="tab-pane fade show active" id="computo" role="tabpanel">
-                <div class="table-responsive">
+                <div class="table-responsive-lg">
                     <table class="table table-striped text-center">
                         <thead>
                             <tr>
@@ -82,7 +84,8 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                 <th>Tipo</th>
                                 <th>Editar</th>
                                 <th>Eliminar</th>
-                            </tr>
+                                <th>Asignar</th>
+                            </tr> 
                         </thead>
                         <tbody>
                         <?php
@@ -102,7 +105,15 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                                 <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
                                                     Eliminar
                                                 </button>
-                                            </td>   
+                                            </td>  
+                                            <td>
+                                                <button class='btn btn-warning asignar-btn' 
+                                                        data-id_equipo='" . $row["id"] . "' 
+                                                        data-toggle='modal' 
+                                                        data-target='#asignarModal'>
+                                                    Asignar
+                                                </button>
+                                            </td>
                                         </tr>";
                                 }
                             } else {
@@ -126,7 +137,6 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                 <th>Serie</th>
                                 <th>Estado</th>
                                 <th>Fecha Alta</th>
-                                
                                 <th>Tipo</th>
                                 <th>Editar</th>
                                 <th>Eliminar</th>

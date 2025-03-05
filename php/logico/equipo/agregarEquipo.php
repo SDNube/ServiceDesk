@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tipoequipo = $_POST['tipoequipo'];
 
     $sql = "INSERT INTO equipo (descripcion, marca, modelo, sn, estado, asignado, tipoequipo) 
-            VALUES ('$descripcion', '$marca', '$modelo', '$sn', '$estado', '$asignado', '$tipoequipo')";
+            VALUES ('$descripcion', '$marca', '$modelo', '$sn', '$estado', NULL, '$tipoequipo')";
 
     if ($conn->query($sql) === TRUE) {
         header("Location: ../../vista/equipo/altaEquipo.php");
