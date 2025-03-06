@@ -5,30 +5,43 @@ include '../../logico/conexion.php';
 include '../../modales/equipo/modalAltaEquipo.php';
 include '../../modales/equipo/modalAsignarEquipo.php';
 
-// Consulta para obtener los equipos y su tipo asociado
-$sqlComputo = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
-        FROM equipo e 
-        JOIN tipo_equipo t ON e.tipoequipo = t.id 
-        WHERE e.asignado IS NULL AND t.id = 1";
+// Consulta para equipos sin asignar y sin responsiva (asignado != NULL y firmado = NULL)
+    $sqlSinResponsiva = "SELECT e.asignado, e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo, u.nombre, u.paterno 
+    FROM equipo e 
+    JOIN tipo_equipo t ON e.tipoequipo = t.id 
+    JOIN datos_usuarios u ON e.asignado = u.id_user
+    WHERE e.asignado IS NOT NULL AND e.firmado IS NULL 
+    LIMIT 5;";
 
-$resultComputo = $conn->query($sqlComputo);
+// Consulta para equipos sin asignar y con responsiva (asignado != NULL y firmado != NULL)
+    $sqlConResponsiva = "SELECT e.asignado, e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo, u.nombre, u.paterno 
+    FROM equipo e 
+    JOIN tipo_equipo t ON e.tipoequipo = t.id 
+    JOIN datos_usuarios u ON e.asignado = u.id_user
+    WHERE e.asignado IS NOT NULL AND e.firmado IS NOT NULL LIMIT 5";
 
-$sqlCelular = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
-        FROM equipo e 
-        JOIN tipo_equipo t ON e.tipoequipo = t.id 
-        WHERE e.asignado IS NULL AND t.id = 2";
+    $sqlComputo = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
+    FROM equipo e 
+    JOIN tipo_equipo t ON e.tipoequipo = t.id 
+    WHERE e.asignado IS NULL AND t.id = 1 LIMIT 5";
 
-$resultCelular = $conn->query($sqlCelular);
+    $sqlCelular = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
+    FROM equipo e 
+    JOIN tipo_equipo t ON e.tipoequipo = t.id 
+    WHERE e.asignado IS NULL AND t.id = 2 LIMIT 5";
 
-$sqlAccesorio = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
-        FROM equipo e 
-        JOIN tipo_equipo t ON e.tipoequipo = t.id 
-        WHERE e.asignado IS NULL AND t.id = 3";
+    $sqlAccesorio = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
+    FROM equipo e 
+    JOIN tipo_equipo t ON e.tipoequipo = t.id 
+    WHERE e.asignado IS NULL AND t.id = 3 LIMIT 5";
 
-$resultAccesorio = $conn->query($sqlAccesorio);
+    $resultComputo = $conn->query($sqlComputo);
+    $resultCelular = $conn->query($sqlCelular);
+    $resultAccesorio = $conn->query($sqlAccesorio);
+    $resultSinResponsiva = $conn->query($sqlSinResponsiva);
+    $resultConResponsiva = $conn->query($sqlConResponsiva);
 
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,6 +56,88 @@ $resultAccesorio = $conn->query($sqlAccesorio);
     
     <script src="../../../js/asignarEquipo.js"></script>
 
+    <style>
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .search-wrapper {
+            margin-bottom: 10px;
+        }
+        .search-wrapper input {
+            width: 100%;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('.pdf-btn').click(function() {
+            var sn = $(this).data('sn');  // Obtener número de serie de la fila
+            
+            $.ajax({
+                url: '../../logico/equipo/obtenerPdf.php', // Archivo PHP que obtiene el PDF de la DB
+                type: 'POST',
+                data: { sn: sn },
+                success: function(response) {
+                    if (response.trim() !== "") {
+                        window.open("../../../pdf/responsivas/" + response.trim(), '_blank'); // Redirigir al PDF
+                    } else {
+                        alert("No se encontró un PDF para este equipo.");
+                    }
+                },
+                error: function() {
+                    alert("Error al obtener el PDF.");
+                }
+            });
+        });
+    });
+    </script>
+
+    <script>
+        // Función para filtrar las tablas
+        $(document).ready(function () {
+            // Filtro para la tabla de Equipo de Cómputo
+            $("#searchComputo").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#computoTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Filtro para la tabla de Telefonía
+            $("#searchTelefonia").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#telefoniaTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Filtro para la tabla de Accesorios
+            $("#searchAccesorios").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#accesoriosTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Filtro para la tabla Sin Responsiva
+            $("#searchSinResponsiva").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#sinResponsivaTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+
+            // Filtro para la tabla Con Responsiva
+            $("#searchConResponsiva").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#conResponsivaTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                });
+            });
+        });
+    </script>
+
 </head>
 <body>
 
@@ -51,27 +146,34 @@ $resultAccesorio = $conn->query($sqlAccesorio);
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#equipoModal">
             Agregar Equipo
         </button>
-        
+
         <p></p>
+        <p></p>
+        <p></p>
+        <!-- Primeras tres pestañas: Equipo de Cómputo, Telefonía y Accesorios -->
         <ul class="nav nav-tabs" id="formTabs" role="tablist">
             <li class="nav-item">
-                <button class="nav-link active" id="computo-tab" data-bs-toggle="tab" data-bs-target="#computo" type="button" role="tab">Equipo de Cómputo</button>
+                <a class="nav-link active" id="computo-tab" data-toggle="tab" href="#computo" role="tab">Equipo de Cómputo</a>
             </li>
             <li class="nav-item">
-                <button class="nav-link" id="telefonia-tab" data-bs-toggle="tab" data-bs-target="#telefonia" type="button" role="tab">Telefonía</button>
+                <a class="nav-link" id="telefonia-tab" data-toggle="tab" href="#telefonia" role="tab">Telefonía</a>
             </li>
             <li class="nav-item">
-                <button class="nav-link" id="accesorios-tab" data-bs-toggle="tab" data-bs-target="#accesorios" type="button" role="tab">Accesorios</button>
+                <a class="nav-link" id="accesorios-tab" data-toggle="tab" href="#accesorios" role="tab">Accesorios</a>
             </li>
         </ul>
 
-
         <div class="tab-content mt-3" id="formTabsContent">
-        
+
             <!-- Formulario de Equipo de Cómputo -->
             <div class="tab-pane fade show active" id="computo" role="tabpanel">
-                <div class="table-responsive-lg">
-                    <table class="table table-striped text-center">
+                <!-- Buscador de la tabla de Equipo de Cómputo -->
+                <div class="search-wrapper">
+                    <input type="text" id="searchComputo" class="form-control" placeholder="Buscar...">
+                </div>
+                <!-- Tabla de Equipo de Cómputo -->
+                <div class="table-container">
+                    <table class="table table-striped text-center" id="computoTable">
                         <thead>
                             <tr>
                                 <th>Descripción</th>
@@ -80,11 +182,11 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                 <th>Serie</th>
                                 <th>Estado</th>
                                 <th>Fecha Alta</th>
-                                
                                 <th>Tipo</th>
                                 <th>Editar</th>
                                 <th>Eliminar</th>
                                 <th>Asignar</th>
+                                
                             </tr> 
                         </thead>
                         <tbody>
@@ -98,7 +200,6 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                             <td>" . htmlspecialchars($row['sn']) . "</td>
                                             <td>" . htmlspecialchars($row['estado']) . "</td>
                                             <td>" . htmlspecialchars($row['fechaAlta']) . "</td>
-                                            
                                             <td>" . htmlspecialchars($row['tipo']) . "</td>
                                             <td><button class='btn btn-primary'>Editar</button></td>
                                             <td>
@@ -107,28 +208,33 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                                 </button>
                                             </td>  
                                             <td>
-                                                <button class='btn btn-warning asignar-btn' 
-                                                        data-id_equipo='" . $row["id"] . "' 
-                                                        data-toggle='modal' 
-                                                        data-target='#asignarModal'>
-                                                    Asignar
-                                                </button>
-                                            </td>
+                                                    <button class='btn btn-warning asignar-btn' 
+                                                            data-id_equipo='" . $row["id"] . "' 
+                                                            data-toggle='modal' 
+                                                            data-target='#asignarModal'>
+                                                        Asignar
+                                                    </button>
+                                                </td>
                                         </tr>";
                                 }
                             } else {
                                 echo "<tr><td colspan='10'>No hay equipos registrados.</td></tr>";
                             }
-                            $conn->close();
                         ?>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="tab-pane fade show " id="telefonia" role="tabpanel">
-                <div class="table-responsive">
-                    <table class="table table-striped text-center">
+            <!-- Formulario de Telefonía -->
+            <div class="tab-pane fade" id="telefonia" role="tabpanel">
+                <!-- Buscador de la tabla de Telefonía -->
+                <div class="search-wrapper">
+                    <input type="text" id="searchTelefonia" class="form-control" placeholder="Buscar...">
+                </div>
+                <!-- Tabla de Telefonía -->
+                <div class="table-container">
+                    <table class="table table-striped text-center" id="telefoniaTable">
                         <thead>
                             <tr>
                                 <th>Descripción</th>
@@ -140,42 +246,55 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                 <th>Tipo</th>
                                 <th>Editar</th>
                                 <th>Eliminar</th>
+                                <th>Asignar</th>
                             </tr>
                         </thead>
                         <tbody>
-                        <?php
-                            if ($resultCelular->num_rows > 0) {
-                                while ($row = $resultCelular->fetch_assoc()) {
-                                    echo "<tr>
-                                            <td>" . htmlspecialchars($row['descripcion']) . "</td>
-                                            <td>" . htmlspecialchars($row['marca']) . "</td>
-                                            <td>" . htmlspecialchars($row['modelo']) . "</td>
-                                            <td>" . htmlspecialchars($row['sn']) . "</td>
-                                            <td>" . htmlspecialchars($row['estado']) . "</td>
-                                            <td>" . htmlspecialchars($row['fechaAlta']) . "</td>
-                                            
-                                            <td>" . htmlspecialchars($row['tipo']) . "</td>
-                                            <td><button class='btn btn-primary'>Editar</button></td>
-                                            <td>
-                                                <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
-                                                    Eliminar
-                                                </button>
-                                            </td>   
-                                        </tr>";
+                            <?php
+                                if ($resultCelular->num_rows > 0) {
+                                    while ($row = $resultCelular->fetch_assoc()) {
+                                        echo "<tr>
+                                                <td>" . htmlspecialchars($row['descripcion']) . "</td>
+                                                <td>" . htmlspecialchars($row['marca']) . "</td>
+                                                <td>" . htmlspecialchars($row['modelo']) . "</td>
+                                                <td>" . htmlspecialchars($row['sn']) . "</td>
+                                                <td>" . htmlspecialchars($row['estado']) . "</td>
+                                                <td>" . htmlspecialchars($row['fechaAlta']) . "</td>
+                                                <td>" . htmlspecialchars($row['tipo']) . "</td>
+                                                <td><button class='btn btn-primary'>Editar</button></td>
+                                                <td>
+                                                    <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
+                                                        Eliminar
+                                                    </button>
+                                                </td>   
+                                                <td>
+                                                    <button class='btn btn-warning asignar-btn' 
+                                                            data-id_equipo='" . $row["id"] . "' 
+                                                            data-toggle='modal' 
+                                                            data-target='#asignarModal'>
+                                                        Asignar
+                                                    </button>
+                                                </td>
+                                            </tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='10'>No hay equipos registrados.</td></tr>";
                                 }
-                            } else {
-                                echo "<tr><td colspan='10'>No hay equipos registrados.</td></tr>";
-                            }
-                            
-                        ?>
+                            ?>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="tab-pane fade show " id="accesorios" role="tabpanel">
-                <div class="table-responsive">
-                    <table class="table table-striped text-center">
+            <!-- Formulario de Accesorios -->
+            <div class="tab-pane fade" id="accesorios" role="tabpanel">
+                <!-- Buscador de la tabla de Accesorios -->
+                <div class="search-wrapper">
+                    <input type="text" id="searchAccesorios" class="form-control" placeholder="Buscar...">
+                </div>
+                <!-- Tabla de Accesorios -->
+                <div class="table-container">
+                    <table class="table table-striped text-center" id="accesoriosTable">
                         <thead>
                             <tr>
                                 <th>Descripción</th>
@@ -184,67 +303,192 @@ $resultAccesorio = $conn->query($sqlAccesorio);
                                 <th>Serie</th>
                                 <th>Estado</th>
                                 <th>Fecha Alta</th>
-                                
                                 <th>Tipo</th>
+                                <th>Nombre</th>
                                 <th>Editar</th>
                                 <th>Eliminar</th>
+                                <th>Asignar</th>
                             </tr>
                         </thead>
                         <tbody>
-                        <?php
-                            if ($resultAccesorio->num_rows > 0) {
-                                while ($row = $resultAccesorio->fetch_assoc()) {
-                                    echo "<tr>
-                                            <td>" . htmlspecialchars($row['descripcion']) . "</td>
-                                            <td>" . htmlspecialchars($row['marca']) . "</td>
-                                            <td>" . htmlspecialchars($row['modelo']) . "</td>
-                                            <td>" . htmlspecialchars($row['sn']) . "</td>
-                                            <td>" . htmlspecialchars($row['estado']) . "</td>
-                                            <td>" . htmlspecialchars($row['fechaAlta']) . "</td>
-                                            
-                                            <td>" . htmlspecialchars($row['tipo']) . "</td>
-                                            <td><button class='btn btn-primary'>Editar</button></td>
-                                            <td>
-                                                <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
-                                                    Eliminar
-                                                </button>
-                                            </td>   
-                                        </tr>";
+                            <?php
+                                if ($resultAccesorio->num_rows > 0) {
+                                    while ($row = $resultAccesorio->fetch_assoc()) {
+                                        echo "<tr>
+                                                <td>" . htmlspecialchars($row['descripcion']) . "</td>
+                                                <td>" . htmlspecialchars($row['marca']) . "</td>
+                                                <td>" . htmlspecialchars($row['modelo']) . "</td>
+                                                <td>" . htmlspecialchars($row['sn']) . "</td>
+                                                <td>" . htmlspecialchars($row['estado']) . "</td>
+                                                <td>" . htmlspecialchars($row['fechaAlta']) . "</td>
+                                                <td>" . htmlspecialchars($row['tipo']) . "</td>
+                                                <td><button class='btn btn-primary'>Editar</button></td>
+                                                <td>
+                                                    <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
+                                                        Eliminar
+                                                    </button>
+                                                </td>   
+                                                <td>
+                                                    <button class='btn btn-warning asignar-btn' 
+                                                            data-id_equipo='" . $row["id"] . "' 
+                                                            data-toggle='modal' 
+                                                            data-target='#asignarModal'>
+                                                        Asignar
+                                                    </button>
+                                                </td>
+                                            </tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='10'>No hay equipos registrados.</td></tr>";
                                 }
-                            } else {
-                                echo "<tr><td colspan='10'>No hay equipos registrados.</td></tr>";
-                            }
-                            
-                        ?>
+                            ?>
                         </tbody>
                     </table>
                 </div>
-            </div>          
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            </div>
+        </div>
 
-</body>
+        <!-- Segunda serie de pestañas para las dos últimas tablas -->
+        <ul class="nav nav-tabs mt-4" id="otherTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="sinResponsiva-tab" data-toggle="tab" href="#sinResponsiva" role="tab">Sin Responsiva</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="conResponsiva-tab" data-toggle="tab" href="#conResponsiva" role="tab">Con Responsiva</a>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3" id="otherTabsContent">
+                <div class="tab-pane fade show active" id="sinResponsiva" role="tabpanel">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchSinResponsiva" class="form-control" placeholder="Buscar equipos sin responsiva...">
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-striped text-center" id="sinResponsivaTable">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Serie</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Alta</th>
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th>Editar</th>
+                                    <th>Ver PDF</th>
+                                    <th>Asignar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                                // Ejecutar la consulta para equipos sin responsiva
+                                $resultSinResponsiva = $conn->query($sqlSinResponsiva);
+                                if ($resultSinResponsiva->num_rows > 0) {
+                                    while ($row = $resultSinResponsiva->fetch_assoc()) {
+                                        echo "<tr>
+                                                <td>" . htmlspecialchars($row['descripcion']) . "</td>
+                                                <td>" . htmlspecialchars($row['marca']) . "</td>
+                                                <td>" . htmlspecialchars($row['modelo']) . "</td>
+                                                <td>" . htmlspecialchars($row['sn']) . "</td>
+                                                <td>" . htmlspecialchars($row['estado']) . "</td>
+                                                <td>" . htmlspecialchars($row['fechaAlta']) . "</td>
+                                                <td>" . htmlspecialchars($row['tipo']) . "</td>
+                                                <td>" 
+                                                    . htmlspecialchars($row['nombre']) . " " 
+                                                    . htmlspecialchars($row['paterno']) . "
+                                                </td>
+
+                                                <td><button class='btn btn-primary'>Editar</button></td>
+                                                <td>
+                                                    <button class='btn btn-danger pdf-btn' data-sn='" . $row['sn'] . "'>
+                                                        <img src='../../../imagenes/iconoPdf.png' width='30' height='25'>
+
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <button class='btn btn-warning asignar-btn' 
+                                                            data-id_equipo='" . $row["id"] . "' 
+                                                            data-toggle='modal' 
+                                                            data-target='#asignarModal'>
+                                                        Asignar
+                                                    </button>
+                                                </td>
+                                            </tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='10'>No hay equipos registrados.</td></tr>";
+                                }
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="conResponsiva" role="tabpanel">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchConResponsiva" class="form-control" placeholder="Buscar equipos con responsiva...">
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-striped text-center" id="conResponsivaTable">
+                            <thead>
+                                <tr>
+                                    <th>Descripción</th>
+                                    <th>Marca</th>
+                                    <th>Modelo</th>
+                                    <th>Serie</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Alta</th>
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                    <th>Asignar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                // Ejecutar la consulta para equipos con responsiva
+                                    $resultConResponsiva = $conn->query($sqlConResponsiva);
+                                    if ($resultConResponsiva->num_rows > 0) {
+                                        while ($row = $resultConResponsiva->fetch_assoc()) {
+                                            echo "<tr>
+                                                    <td>" . htmlspecialchars($row['descripcion']) . "</td>
+                                                    <td>" . htmlspecialchars($row['marca']) . "</td>
+                                                    <td>" . htmlspecialchars($row['modelo']) . "</td>
+                                                    <td>" . htmlspecialchars($row['sn']) . "</td>
+                                                    <td>" . htmlspecialchars($row['estado']) . "</td>
+                                                    <td>" . htmlspecialchars($row['fechaAlta']) . "</td>
+                                                    <td>" . htmlspecialchars($row['tipo']) . "</td>
+                                                    <td>" 
+                                                        . htmlspecialchars($row['nombre']) . " " 
+                                                        . htmlspecialchars($row['paterno']) . "
+                                                    </td>
+                                                    <td><button class='btn btn-primary'>Editar</button></td>
+                                                    <td>
+                                                        <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
+                                                            
+                                                        </button>
+                                                    </td>
+                                                    <td>
+                                                        <button class='btn btn-warning asignar-btn' 
+                                                                data-id_equipo='" . $row["id"] . "' 
+                                                                data-toggle='modal' 
+                                                                data-target='#asignarModal'>
+                                                            Asignar
+                                                        </button>
+                                                    </td>
+                                                </tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='10'>No hay equipos con responsiva.</td></tr>";
+                                    }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
 
-<script>
-    $(document).ready(function() {
-        $('.delete-btn').click(function() {
-            var id = $(this).data('id');
-            var confirmacion = confirm("¿Está seguro de que desea eliminar este equipo?");
-            if (confirmacion) {
-                $.ajax({
-                    url: '../logico/eliminarEquipo.php',
-                    method: 'POST',
-                    data: { id: id },
-                    success: function(response) {
-                        alert('Equipo eliminado correctamente.');
-                        location.reload();
-                    },
-                    error: function() {
-                        alert('Hubo un problema al eliminar el equipo.');
-                    }
-                });
-            }
-        });
-    });
-</script>

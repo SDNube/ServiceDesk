@@ -39,8 +39,8 @@
                             <input type="text" class="form-control" id="materno" name="materno" required>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="fechaNacimiento">Edad</label>
-                            <input type="number" class="form-control" id="fechaNacimiento" name="fechaNacimiento" required>
+                            <label for="fechaNacimiento">Cumpleaños</label>
+                            <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" required>
                         </div>
                     </div>
                     <div class="form-row">

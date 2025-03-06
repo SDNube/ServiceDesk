@@ -3,7 +3,14 @@ require('../../../pdf/fpdf.php');
 require('../conexion.php');
 session_start(); // Iniciar sesión para obtener la variable de sesión 'id'
 
-// Recibiendo las variables
+// Verificar que se reciban los parámetros
+if (!isset($_GET['id_equipo']) || !isset($_GET['id_nombre'])) {
+    echo "❌ ERROR: Faltan parámetros (id_equipo o id_nombre).";
+    exit();
+} else {
+    echo "✅ Bien";
+}
+
 $id_equipo = $_GET['id_equipo'];
 $id_nombre = $_GET['id_nombre'];
 
@@ -15,15 +22,28 @@ $sql_equipo = "SELECT e.marca, e.modelo, e.sn, e.tipoequipo, t.tipo
 $result_equipo = mysqli_query($conn, $sql_equipo);
 $equipo = mysqli_fetch_assoc($result_equipo);
 
+if (!$equipo) {
+    die("❌ ERROR: No se encontró el equipo con ID $id_equipo.");
+}
+
 // Consulta para obtener los datos del responsable
 $sql_usuario = "SELECT nombre, paterno, materno FROM datos_usuarios WHERE id_user = '$id_nombre'";
 $result_usuario = mysqli_query($conn, $sql_usuario);
 $usuario = mysqli_fetch_assoc($result_usuario);
 
+if (!$usuario) {
+    die("❌ ERROR: No se encontró el usuario con ID $id_nombre.");
+}
+
 // Generar nombre del archivo PDF
-$nombre_pdf = $equipo['tipo'] . '_' . $id_nombre . '_' . $usuario['nombre'] . '_' . $usuario['paterno'] . '.pdf';
+$nombre_pdf = $id_equipo . '_' . $id_nombre . '_' . $usuario['nombre'] . '_' . $usuario['paterno'] . '.pdf';
 $nombre_pdf = utf8_decode($nombre_pdf); // Para evitar problemas con acentos
 $ruta_pdf = "../../../pdf/responsivas/" . $nombre_pdf;
+
+// Verificar si la carpeta destino existe
+if (!is_dir("../../../pdf/responsivas/")) {
+    die("❌ ERROR: La carpeta destino no existe.");
+}
 
 // Crear objeto FPDF
 $pdf = new FPDF();
@@ -54,14 +74,8 @@ $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(0, 10, utf8_decode('Condiciones de Uso'), 0, 1, 'L');
 $pdf->SetFont('Arial', '', 10);
 $pdf->MultiCell(0, 10, utf8_decode("1. El equipo asignado es propiedad de Puntoacti y se encuentra bajo el resguardo de " . 
-    $usuario['nombre'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'] . ".
-2. El responsable deberá usar el equipo de forma adecuada, cuidando la integridad física y funcional del mismo.
-3. El equipo debe ser utilizado exclusivamente para las actividades laborales o académicas relacionadas con la empresa/institución.
-4. En caso de daño, pérdida o mal funcionamiento, el responsable deberá notificar a [Área de soporte o TI] de inmediato.
-5. El equipo será devuelto al final de la asignación o cuando así se requiera por parte de la empresa/institución.
-6. Cualquier modificación o instalación de software no autorizado está prohibida."), 0, 1);
+    $usuario['nombre'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'] . "..."), 0, 1);
 
-// Salto de línea
 $pdf->Ln(10);
 
 // Firma de responsabilidad
@@ -85,26 +99,25 @@ $pdf->Cell(95, 10, utf8_decode('Firma: __________________________'), 0, 1, 'L');
 $pdf->Cell(95, 10, utf8_decode('Fecha: __________________________'), 0, 0, 'L');
 $pdf->Cell(95, 10, utf8_decode('Fecha: __________________________'), 0, 1, 'L');
 
-// Salto de línea
 $pdf->Ln(10);
 
-// Generar el PDF y guardarlo en la carpeta "pdf"
-$pdf->Output($ruta_pdf, 'F');
+// Guardar el PDF en el servidor
+$pdf->Output('F', $ruta_pdf); // Guardar el PDF en el directorio especificado
 
-// INSERT en la tabla "equipo"
-$sql_insert_equipo = "UPDATE equipo SET asignado = '$id_nombre', pdf = '$nombre_pdf' WHERE id = '$id_equipo'";
-mysqli_query($conn, $sql_insert_equipo);
+// Actualizar la tabla "equipo"
+$sql_update_equipo = "UPDATE equipo SET asignado = '$id_nombre', pdf = '$nombre_pdf' WHERE id = '$id_equipo'";
 
-// Obtener el ID de sesión del usuario
+// Registrar en el historial
 $id_sesion = $_SESSION['id'];
-
-// INSERT en la tabla "historial_equipo"
 $mensaje = "Se asignó a " . $usuario['nombre'] . " " . $usuario['paterno'];
 $sql_insert_historial = "INSERT INTO historial_equipo (id_user, id_movimiento, id_equipo, mensaje, fecha) 
                          VALUES ('$id_sesion', '1', '$id_equipo', '$mensaje', NOW())";
+
+// Ejecución de las consultas
+mysqli_query($conn, $sql_update_equipo);
 mysqli_query($conn, $sql_insert_historial);
 
-echo "PDF generado y registros actualizados correctamente.";
-header("Location: ../../vista/equipo/altaEquipo.php");
-
+// Responder al cliente
+echo "✅ PDF generado y registros actualizados correctamente.";
+exit();
 ?>
