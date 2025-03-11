@@ -48,8 +48,10 @@
                             <label for="departamento">Departamento</label>
                             <select class="form-control" id="departamento" name="departamento" required>
                                 <option></option>
-                                <option value="TI">TI</option>
+                                <option value="Operaciones">Operaciones</option>
+                                <option value="Administracion">Administracion</option>
                                 <option value="Direccion">Direccion</option>
+                                <option value="TI">TI</option>
                             </select>
                         </div>
                         <div class="form-group col-md-6">

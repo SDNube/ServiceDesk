@@ -4,6 +4,7 @@
 include '../../logico/conexion.php'; 
 include '../../modales/equipo/modalAltaEquipo.php';
 include '../../modales/equipo/modalAsignarEquipo.php';
+include '../../modales/equipo/modalFirmarResponsiva.php';
 
 // Consulta para equipos sin asignar y sin responsiva (asignado != NULL y firmado = NULL)
     $sqlSinResponsiva = "SELECT e.asignado, e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo, u.nombre, u.paterno 
@@ -14,7 +15,7 @@ include '../../modales/equipo/modalAsignarEquipo.php';
     LIMIT 5;";
 
 // Consulta para equipos sin asignar y con responsiva (asignado != NULL y firmado != NULL)
-    $sqlConResponsiva = "SELECT e.asignado, e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo, u.nombre, u.paterno 
+    $sqlConResponsiva = "SELECT e.asignado, e.id, e.descripcion, e.marca, e.modelo, e.sn, e.firmado, e.fechaAlta, e.estado, t.tipo, u.nombre, u.paterno 
     FROM equipo e 
     JOIN tipo_equipo t ON e.tipoequipo = t.id 
     JOIN datos_usuarios u ON e.asignado = u.id_user
@@ -30,7 +31,7 @@ include '../../modales/equipo/modalAsignarEquipo.php';
     JOIN tipo_equipo t ON e.tipoequipo = t.id 
     WHERE e.asignado IS NULL AND t.id = 2 LIMIT 5";
 
-    $sqlAccesorio = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado, t.tipo 
+    $sqlAccesorio = "SELECT e.id, e.descripcion, e.marca, e.modelo, e.sn, e.fechaAlta, e.estado,  t.tipo 
     FROM equipo e 
     JOIN tipo_equipo t ON e.tipoequipo = t.id 
     WHERE e.asignado IS NULL AND t.id = 3 LIMIT 5";
@@ -53,8 +54,13 @@ include '../../modales/equipo/modalAsignarEquipo.php';
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <script src="../../../js/asignarEquipo.js"></script>
+    <script src="../../../js/firmarResponsiva.js"></script><!-- Asegúrate de incluir jQuery antes de tu archivo script.js -->
+
+</body>
+
 
     <style>
         .table-container {
@@ -68,7 +74,6 @@ include '../../modales/equipo/modalAsignarEquipo.php';
             width: 100%;
         }
     </style>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
     $(document).ready(function() {
         $('.pdf-btn').click(function() {
@@ -304,7 +309,6 @@ include '../../modales/equipo/modalAsignarEquipo.php';
                                 <th>Estado</th>
                                 <th>Fecha Alta</th>
                                 <th>Tipo</th>
-                                <th>Nombre</th>
                                 <th>Editar</th>
                                 <th>Eliminar</th>
                                 <th>Asignar</th>
@@ -375,8 +379,8 @@ include '../../modales/equipo/modalAsignarEquipo.php';
                                     <th>Fecha Alta</th>
                                     <th>Tipo</th>
                                     <th>Nombre</th>
-                                    <th>Editar</th>
-                                    <th>Ver PDF</th>
+                                    <th>PDF</th>
+                                    <th>Cancelar</th>
                                     <th>Asignar</th>
                                 </tr>
                             </thead>
@@ -399,19 +403,20 @@ include '../../modales/equipo/modalAsignarEquipo.php';
                                                     . htmlspecialchars($row['paterno']) . "
                                                 </td>
 
-                                                <td><button class='btn btn-primary'>Editar</button></td>
+                                                
                                                 <td>
-                                                    <button class='btn btn-danger pdf-btn' data-sn='" . $row['sn'] . "'>
+                                                    <button  class='btn btn-danger pdf-btn' data-sn='" . $row['sn'] . "'>
                                                         <img src='../../../imagenes/iconoPdf.png' width='30' height='25'>
 
                                                     </button>
                                                 </td>
+                                                <td><button style='width:65px;' class='btn btn-danger'>X</button></td>
                                                 <td>
                                                     <button class='btn btn-warning asignar-btn' 
                                                             data-id_equipo='" . $row["id"] . "' 
                                                             data-toggle='modal' 
-                                                            data-target='#asignarModal'>
-                                                        Asignar
+                                                            data-target='#firmarResponsiva'>
+                                                        Firmar
                                                     </button>
                                                 </td>
                                             </tr>";
@@ -440,8 +445,8 @@ include '../../modales/equipo/modalAsignarEquipo.php';
                                     <th>Fecha Alta</th>
                                     <th>Tipo</th>
                                     <th>Nombre</th>
-                                    <th>Editar</th>
-                                    <th>Eliminar</th>
+                                    <th>PDF</th>
+                                    <th>Revocar</th>
                                     <th>Asignar</th>
                                 </tr>
                             </thead>
@@ -463,15 +468,20 @@ include '../../modales/equipo/modalAsignarEquipo.php';
                                                         . htmlspecialchars($row['nombre']) . " " 
                                                         . htmlspecialchars($row['paterno']) . "
                                                     </td>
-                                                    <td><button class='btn btn-primary'>Editar</button></td>
+                                                    <td>
+                                                    <button class='btn btn-danger pdf-btn' data-sn='" . $row['sn'] . "'>
+                                                        <img src='../../../imagenes/iconoPdf.png' width='30' height='25'>
+
+                                                    </button>
+                                                </td>
                                                     <td>
                                                         <button class='btn btn-danger delete-btn' data-id='" . $row['id'] . "'>
-                                                            
+                                                            Revocar
                                                         </button>
                                                     </td>
                                                     <td>
                                                         <button class='btn btn-warning asignar-btn' 
-                                                                data-id_equipo='" . $row["id"] . "' 
+                                                                data-id_equipo='" . $row["firmado"] . "' 
                                                                 data-toggle='modal' 
                                                                 data-target='#asignarModal'>
                                                             Asignar

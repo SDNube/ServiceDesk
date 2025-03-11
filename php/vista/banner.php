@@ -51,11 +51,11 @@ $nombreCompleto = $_SESSION['nombreCompleto']; // Asegúrate de que 'username' e
                         <a class="nav-link" href="/ServiceDesk/php/vista/tickets/ticketscliente.php">Tickets de soporte</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/test.php">Contacto</a>
+                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/test.php" hidden>miUSuario</a>
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                        <a class="nav-link" href="#"><?php echo htmlspecialchars($nombreCompleto); ?></a>
+                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/miUSuario.php"><?php echo htmlspecialchars($nombreCompleto); ?></a>
                 </li>
             </ul>
             <form class="form-inline ml-auto" action="/ServiceDesk/php/logico/usuarios/logout.php" method="POST">

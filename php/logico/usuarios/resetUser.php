@@ -24,7 +24,7 @@ if (isset($_POST['correo'])) {
             // Ahora que tenemos el id_user, buscamos el id en la tabla users
             $sql_update_password = "UPDATE users SET password = ? WHERE id = ?";
             $stmt_update_password = $conn->prepare($sql_update_password);
-            $new_password = "Puntoactivo.23";
+            $new_password = "Placeres#625";
             $stmt_update_password->bind_param("si", $new_password, $id_user);
 
             // Ejecutar la actualización del password

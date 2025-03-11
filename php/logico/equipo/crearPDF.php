@@ -49,6 +49,12 @@ if (!is_dir("../../../pdf/responsivas/")) {
 $pdf = new FPDF();
 $pdf->SetAutoPageBreak(true, 10);
 $pdf->AddPage();
+
+// Agregar el logo de la empresa
+$pdf->Image('../../../imagenes/logoPa.png', 10, 10, 30); // Ajusta la ruta y el tamaño según sea necesario
+$pdf->Ln(20); // Salto de línea para evitar que el logo sobreponga el título
+
+// Título
 $pdf->SetFont('Arial', 'B', 16);
 $pdf->Cell(0, 10, utf8_decode('Responsiva de Equipo de Cómputo'), 0, 1, 'C');
 $pdf->Ln(10);
@@ -73,8 +79,15 @@ $pdf->Ln(10);
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(0, 10, utf8_decode('Condiciones de Uso'), 0, 1, 'L');
 $pdf->SetFont('Arial', '', 10);
-$pdf->MultiCell(0, 10, utf8_decode("1. El equipo asignado es propiedad de Puntoacti y se encuentra bajo el resguardo de " . 
-    $usuario['nombre'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'] . "..."), 0, 1);
+$pdf->MultiCell(0, 10, utf8_decode(
+    "1. El equipo asignado es propiedad de Puntoacti y se encuentra bajo el resguardo de " . 
+    $usuario['nombre'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'] . ".\n" .
+    "2. El responsable deberá usar el equipo de forma adecuada, cuidando la integridad física y funcional del mismo.\n" .
+    "3. El equipo debe ser utilizado exclusivamente para las actividades laborales o académicas relacionadas con la empresa/institución.\n" .
+    "4. En caso de daño, pérdida o mal funcionamiento, el responsable deberá notificar a [Área de soporte o TI] de inmediato.\n" .
+    "5. El equipo será devuelto al final de la asignación o cuando así se requiera por parte de la empresa/institución.\n" .
+    "6. Cualquier modificación o instalación de software no autorizado está prohibida."
+), 0, 1);
 
 $pdf->Ln(10);
 
