@@ -49,8 +49,8 @@ if (isset($_POST['idTicketEdicion'], $_POST['problema'], $_POST['descripcion']))
             $ancho = $_POST['ancho'] ?? '';
             $peso = $_POST['peso'] ?? '';
 
-            $nuevoMensaje = "Problema: $problema\nDescripción: $descripcion\n" .
-                            "ID Cliente: $idCliente\nCP Origen: $cpOrigen\nCP Destino: $cpDestino\n" .
+            $nuevoMensaje = "Problema: $problema\nDescripción: $descripcion\n" . 
+                            "ID Cliente: $idCliente\nCP Origen: $cpOrigen\nCP Destino: $cpDestino\n" . 
                             "Largo: $largo cm\nAlto: $alto cm\nAncho: $ancho cm\nPeso: $peso kg";
         }
         // **Caso Computadora**
@@ -94,13 +94,24 @@ if (isset($_POST['idTicketEdicion'], $_POST['problema'], $_POST['descripcion']))
                            VALUES (?, ?, ?, ?, NOW())";
         $stmtHistorial = $conn->prepare($queryHistorial);
         $accion = 7;
-        
+
         if (!empty($mensajeHistorial) && !empty($accion)) {
             $stmtHistorial->bind_param("iisi", $idTicket, $idUser, $mensajeHistorial, $accion);
 
             if ($stmtHistorial->execute()) {
                 $stmtHistorial->close();
-                header("Location: ../../vista/tickets/ticketscliente.php");
+
+                // Aquí, devolver la respuesta como JSON
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Ticket actualizado correctamente.',
+                    'ticket' => [
+                        'idTicket' => $idTicket,
+                        'problema' => $problema,
+                        'descripcion' => $descripcion,
+                        'mensaje' => $nuevoMensaje
+                    ]
+                ]);
                 exit();
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Error al registrar en historial.']);
