@@ -4,8 +4,10 @@
     include ('../../modales/usuarios/miGrupo.php');
     include ('../../modales/usuarios/miAsignado.php');
     include ('../../modales/usuarios/miCumpleanos.php');
+    // Este es el contenido del archivo "redirect.php"
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">

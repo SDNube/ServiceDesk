@@ -1,10 +1,12 @@
 <?php
-session_start(); // Iniciar la sesión
+session_start(); // Inicia la sesión
 
 include '../conexion.php';
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
+
+$response = array(); // Array para la respuesta
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user = $_POST['username'];
@@ -43,16 +45,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['nombreCompleto'] = "Nombre no encontrado";
             }
 
-            // Redirigir a banner.php en caso de inicio de sesión exitoso
-            header("Location: ../../vista/usuarios/miUsuario.php");
-            exit();
+            // Respuesta exitosa
+            $response['status'] = 'success';
+            $response['message'] = 'Inicio de sesión exitoso';
         } else {
-            echo "Contraseña incorrecta.";
+            // Respuesta de error por contraseña incorrecta
+            $response['status'] = 'error';
+            $response['message'] = 'Contraseña incorrecta.';
         }
     } else {
-        echo "Usuario no encontrado.";
+        // Respuesta de error por usuario no encontrado
+        $response['status'] = 'error';
+        $response['message'] = 'Usuario no encontrado.';
     }
 }
+
+// Enviar la respuesta en formato JSON
+echo json_encode($response);
 
 // Cerrar la conexión
 $conn->close();
