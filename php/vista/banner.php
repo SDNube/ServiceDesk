@@ -36,7 +36,7 @@ $nombreCompleto = $_SESSION['nombreCompleto']; // Asegúrate de que 'username' e
             <ul class="navbar-nav">
                 <?php if ($id_roll == 1): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/tickets/tickets.php">Tickets <span class="sr-only">(actual)</span></a>
+                        <a class="nav-link" href="/ServiceDesk/php/vista/tickets/tickets.php">Tickets</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/ServiceDesk/php/vista/usuarios.php">Usuarios</a>
@@ -55,7 +55,7 @@ $nombreCompleto = $_SESSION['nombreCompleto']; // Asegúrate de que 'username' e
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/miUSuario.php"><?php echo htmlspecialchars($nombreCompleto); ?></a>
+                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/miUSuario.php"><?php echo htmlspecialchars($nombreCompleto); ?><span class="sr-only">(actual)</span></a>
                 </li>
             </ul>
             <form class="form-inline ml-auto" action="/ServiceDesk/php/logico/usuarios/logout.php" method="POST">

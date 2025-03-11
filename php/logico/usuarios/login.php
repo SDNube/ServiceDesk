@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             // Redirigir a banner.php en caso de inicio de sesión exitoso
-            header("Location: ../../vista/banner.php");
+            header("Location: ../../vista/usuarios/miUsuario.php");
             exit();
         } else {
             echo "Contraseña incorrecta.";

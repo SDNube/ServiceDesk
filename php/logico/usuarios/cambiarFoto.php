@@ -1,85 +1,56 @@
 <?php
+// Incluir la conexión a la base de datos
+include '../../logico/conexion.php'; 
+
 session_start();
-include('../conexion.php'); // Conexión a la base de datos
-
-
-// Verificar si el usuario está logueado
 if (!isset($_SESSION['id'])) {
-    echo "Debes iniciar sesión para cambiar tu foto de perfil.";
+    echo json_encode(['status' => 'error', 'message' => 'Debes iniciar sesión']);
     exit;
 }
 
-// Obtener el ID del usuario desde la sesión
-$idUser = $_SESSION['id'];
+$id_user = $_SESSION['id'];
 
-$targetDir = "C:/xampp/htdocs/ServiceDesk/uploads/"; 
+if (isset($_FILES['profilePic']) && $_FILES['profilePic']['error'] === UPLOAD_ERR_OK) {
+    $fileTmpPath = $_FILES['profilePic']['tmp_name'];
+    $fileName = $_FILES['profilePic']['name'];
+    $fileSize = $_FILES['profilePic']['size'];
+    $fileType = $_FILES['profilePic']['type'];
 
-// Nombre temporal del archivo
-$targetFile = $targetDir . basename($_FILES["profilePic"]["name"]);
-$imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-// Comprobar si el archivo es una imagen real
-if (isset($_POST["submit"])) {
-    $check = getimagesize($_FILES["profilePic"]["tmp_name"]);
-    if ($check === false) {
-        echo "El archivo no es una imagen.";
+    // Verificar si el archivo es una imagen válida
+    $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!in_array($fileType, $allowedTypes)) {
+        echo json_encode(['status' => 'error', 'message' => 'El archivo debe ser una imagen (jpg, png, gif, webp)']);
         exit;
     }
-}
 
-// Consultar la base de datos para obtener la imagen actual del usuario
-$query = "SELECT foto FROM datos_usuarios WHERE id_user = '$idUser'";
-$result = mysqli_query($conn, $query);
-
-if (mysqli_num_rows($result) > 0) {
-    $row = mysqli_fetch_assoc($result);
-    $currentImage = $row['foto'];
-
-    // Si ya tiene una imagen de perfil, eliminarla de la carpeta
-    if ($currentImage && file_exists($targetDir . $currentImage)) {
-        unlink($targetDir . $currentImage); // Eliminar la imagen anterior
+    // Validar el tamaño del archivo
+    $maxFileSize = 2 * 1024 * 1024; // 2 MB
+    if ($fileSize > $maxFileSize) {
+        echo json_encode(['status' => 'error', 'message' => 'El archivo excede el tamaño máximo permitido (2MB)']);
+        exit;
     }
-} else {
-    echo "No se encontró el usuario en la base de datos.";
-    exit;
-}
 
-// Comprobar si el archivo ya existe en el servidor
-if (file_exists($targetFile)) {
-    echo "Lo siento, el archivo ya existe.";
-    exit;
-}
+    // Subir la imagen al servidor
+    $uploadDir = '../../../uploads/';
+    $newFileName = uniqid() . '-' . $fileName;
+    $uploadPath = $uploadDir . $newFileName;
 
-// Limitar el tamaño del archivo (en bytes)
-if ($_FILES["profilePic"]["size"] > 2000000) { // 500 KB por ejemplo
-    echo "Lo siento, el archivo es demasiado grande.";
-    exit;
-}
-
-// Permitir ciertos formatos de imagen
-if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-    echo "Lo siento, solo se permiten archivos JPG, JPEG, PNG y GIF.";
-    exit;
-}
-
-// Subir el archivo al servidor
-if (move_uploaded_file($_FILES["profilePic"]["tmp_name"], $targetFile)) {
-    echo "El archivo " . htmlspecialchars(basename($_FILES["profilePic"]["name"])) . " ha sido subido.";
-
-    // Insertar el nombre de la nueva imagen en la base de datos
-    $imageName = basename($_FILES["profilePic"]["name"]);
-
-    $updateQuery = "UPDATE datos_usuarios SET foto = '$imageName' WHERE id_user = '$idUser'";
-
-    if (mysqli_query($conn, $updateQuery)) {
-        echo "Nombre de la imagen actualizado en la base de datos.";
-        header("Location: ../../vista/usuarios/usuarioCliente.php");
+    if (move_uploaded_file($fileTmpPath, $uploadPath)) {
+        // Actualizar la ruta de la foto en la base de datos
+        $query = "UPDATE datos_usuarios SET foto = ? WHERE id_user = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("si", $newFileName, $id_user);
+        if ($stmt->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Foto de perfil actualizada correctamente']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Error al actualizar la base de datos']);
+        }
+        $stmt->close();
     } else {
-        echo "Error al actualizar la base de datos: " . mysqli_error($conn);
+        echo json_encode(['status' => 'error', 'message' => 'Error al subir la imagen']);
     }
-
 } else {
-    echo "Lo siento, hubo un error al subir tu archivo.";
+    echo json_encode(['status' => 'error', 'message' => 'No se ha seleccionado una imagen']);
 }
 
 mysqli_close($conn);
