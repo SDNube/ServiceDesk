@@ -51,6 +51,7 @@ $asignado_id = 11;
 switch ($path) {
     case 'Computadora':
         $prioridad = 3;
+        break;
     case 'Solicitud':
         $prioridad = 4;
         break;

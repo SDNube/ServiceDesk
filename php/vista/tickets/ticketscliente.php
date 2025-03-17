@@ -1,6 +1,9 @@
 <?php 
 include '../banner.php';
 include '../../logico/conexion.php'; 
+include '../../modales/tickets/modalSolicitudEquipo.php';
+include '../../modales/tickets/modalSistemaPlataforma.php';
+include '../../modales/tickets/modalTiComputadora.php';
 $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
 
 // Obtener los tickets del usuario con la prioridad y estado, excluyendo los estados "Cancelado", "Cerrado" y "Resuelto"
@@ -35,50 +38,21 @@ $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Tickets</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
-    <!-- Cargar jQuery completo -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="../../../css/filtros.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-    <!-- Incluir el archivo JavaScript externo para la cancelación -->
-    <script src="../../../js/cancelacionTicket.js"></script> <!-- Ruta correcta -->
+    <script src="../../../js/cancelacionTicket.js"></script>
     <script src="../../../js/abrirModalVerTicket.js"></script>
     <script src="../../../js/abrirModalComentarios.js"></script>
 
-
-    <style>
-        /* Animación para prioridad urgente */
-        @keyframes parpadeo {
-            0% { color: red; }
-            50% { color: black; }
-            100% { color: red; }
-        }
-        .urgente {
-            animation: parpadeo 1s infinite;
-            font-weight: bold;
-        }
-    </style>
-
-    <script>
-        $(document).ready(function() {
-            $('#buscador').on('keyup', function() {
-                var value = $(this).val().toLowerCase();
-                
-                $('table tbody tr').filter(function() {
-                    var text = $(this).find('td').eq(0).text().toLowerCase(); // Buscar solo en la columna de ID
-                    $(this).toggle(text.indexOf(value) > -1);
-                });
-            })
-        });
-    </script>
-
 </head>
 <body>
-
 <div class="container-fluid mt-4">
     <h1>Mis Tickets</h1>
+
+    <!-- Botones para abrir modales -->
     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ticketTiComputadora">
         TI - Computadora
     </button>
@@ -88,19 +62,145 @@ $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ticketSolicitudEquipo">
         Solicitud - Equipo
     </button>
-    <!-- Buscador con Bootstrap alineado a la derecha -->
+
+    <div id="filters" style="display: none;">
+    <div class="row my-3">
+        <!-- Filtro por Status -->
+        <div class="col-md-4">
+            <h5>Status:</h5>
+            <ul class="list-unstyled">
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="Nuevo" checked>
+                    </div>
+                    <span class="ml-2">Nuevo</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="En Proceso" checked>
+                    </div>
+                    <span class="ml-2">En Proceso</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="Resuelto">
+                    </div>
+                    <span class="ml-2">Resuelto</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="Cerrado">
+                    </div>
+                    <span class="ml-2">Cerrado</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="En Pausa" checked>
+                    </div>
+                    <span class="ml-2">En Pausa</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="Cancelado">
+                    </div>
+                    <span class="ml-2">Cancelado</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="Actualizado" checked>
+                    </div>
+                    <span class="ml-2">Actualizado</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-status" value="Comentario" checked>
+                    </div>
+                    <span class="ml-2">Comentario</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Filtro por Prioridad -->
+        <div class="col-md-4">
+            <h5>Prioridad:</h5>
+            <ul class="list-unstyled">
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-priority" value="Urgente" checked>
+                    </div>
+                    <span class="ml-2 text-danger">Urgente</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-priority" value="Alta" checked>
+                    </div>
+                    <span class="ml-2 text-warning">Alta</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-priority" value="Media" checked>
+                    </div>
+                    <span class="ml-2 text-success">Media</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-priority" value="Baja" checked>
+                    </div>
+                    <span class="ml-2 text-muted">Baja</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Filtro por Path -->
+        <div class="col-md-4">
+            <h5>Path:</h5>
+            <ul class="list-unstyled">
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-path" value="Computadora" checked>
+                    </div>
+                    <span class="ml-2">Computadora</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-path" value="Plataforma" checked>
+                    </div>
+                    <span class="ml-2">Plataforma</span>
+                </li>
+                <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-path" value="Solicitud" checked>
+                    </div>
+                    <span class="ml-2">Solicitud</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<p></p>
     <div class="row mb-3">
-        <div class="col-md-12 d-flex justify-content-end">
+        <div class="col-md-12 d-flex justify-content-start">
             <div class="input-group" style="max-width: 300px;">
                 <div class="input-group-prepend">
                     <span class="input-group-text"><i class="fas fa-search"></i></span>
                 </div>
                 <input id="buscador" class="form-control" type="text" placeholder="Buscar por ID...">
             </div>
+            
         </div>
     </div>
-    <p></p>
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex justify-content-start">
+            <div class="input-group" style="max-width: 300px;">
+                <div class="input-group-prepend">
+                <button id="toggle-filters" class="btn btn-primary mb-3">Mostrar Filtros</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 
+    <!-- Tabla de Tickets -->
     <div class="table-responsive">
         <table class="table table-striped text-center w-100">
             <thead>
@@ -117,63 +217,41 @@ $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="ticketsTable">
                 <?php
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        $clasePrioridad = ($row['prioridad'] == "Urgente" || $row['prioridad_id'] == 2) ? "urgente" : "";
-
-                        echo "<tr>";
-                        echo "<td>{$row['id']}</td>";
-                        echo "<td>{$row['path']}</td>";
-                        echo "<td>{$row['problema']}</td>";
-                        echo "<td>{$row['creacion']}</td>";
-                        echo "<td>{$row['actualizacion']}</td>";
-                        echo "<td class='$clasePrioridad'>{$row['prioridad']}</td>";
-                        echo "<td>{$row['status']}</td>";
-                        echo "<td>{$row['nombre']} {$row['paterno']}</td>";
-                        echo "<td>{$row['descripcion_corta']}</td>";
-                        echo "<td class='text-center align-middle' style='display: flex; justify-content: center; align-items: center; gap: 5px;'>
-                                <button class='btn btn-danger d-flex justify-content-center align-items-center' 
-                                        style='width: 30px; height: 30px; font-size: 18px; color: white;' 
-                                        onclick='abrirModalCancelacion({$row['id']})'>
-                                    X
-                                </button>
-                                <button class='btn btn-info d-middle' justify-content-center align-items-center' 
-                                        style='width: 31px; height: 31px; padding: 0;' 
-                                        onclick='abrirModalVerTicket({$row['id']}, \"{$row['path']}\")'>
-                                    <img src='../../../imagenes/ver.png' alt='Ver' style='width: 22px; height: 25px;'>
-                                </button>
-                                 
-                                <button class='btn btn-warning d-middle' 
-                                        style='width: 31px; height: 31px; padding: 0;' 
-                                        onclick='abrirModalComentarios({$row['id']})'>
-                                    <img src='../../../imagenes/comentario.png' alt='Ver' style='width: 22px; height: 25px;'>
-                                </button>
-
-                                ";
-
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='10'>No tienes tickets registrados</td></tr>";
+                while ($row = $result->fetch_assoc()) {
+                    $clasePrioridad = ($row['prioridad'] == "Urgente" || $row['prioridad_id'] == 2) ? "urgente" : "";
+                    echo "<tr data-status='{$row['status']}' data-priority='{$row['prioridad']}' data-path='{$row['path']}'>";
+                    echo "<td>{$row['id']}</td>";
+                    echo "<td>{$row['path']}</td>";
+                    echo "<td>{$row['problema']}</td>";
+                    echo "<td>{$row['creacion']}</td>";
+                    echo "<td>{$row['actualizacion']}</td>";
+                    echo "<td class='$clasePrioridad'>{$row['prioridad']}</td>";
+                    echo "<td>{$row['status']}</td>";
+                    echo "<td>{$row['nombre']} {$row['paterno']}</td>";
+                    echo "<td>{$row['descripcion_corta']}</td>";
+                    echo "<td class='text-center align-middle'>
+                            <button class='btn btn-danger' onclick='abrirModalCancelacion({$row['id']})'>X</button>
+                            <button class='btn btn-info' onclick='abrirModalVerTicket({$row['id']}, \"{$row['path']}\")'>
+                                <img src='../../../imagenes/ver.png' style='width: 22px; height: 25px;'>
+                            </button>
+                            <button class='btn btn-warning' onclick='abrirModalComentarios({$row['id']})'>
+                                <img src='../../../imagenes/comentario.png' style='width: 22px; height: 25px;'>
+                            </button>
+                          </td>";
+                    echo "</tr>";
                 }
                 ?>
             </tbody>
         </table>
     </div>
 </div>
-
-<!-- Modales -->
 <?php 
 include '../../modales/tickets/modalComentarios.php';
 include '../../modales/tickets/modalCancelacion.php';
-include '../../modales/tickets/modalSistemaPlataforma.php';
-include '../../modales/tickets/modalTiComputadora.php';
-include '../../modales/tickets/modalSolicitudEquipo.php';
 include '../../modales/tickets/modalTiComputadoraEdicion.php'; 
 include '../../modales/tickets/modalSistemaPlataformaEdicion.php';
 ?>
 
-</body>
-</html>
+<script src="../../../js/filtros.js"></script>

@@ -37,7 +37,7 @@
                     <!-- Formulario para equipo de cómputo -->
                     <div id="form-equipo" class="form-group" style="display: none;">
                         <label for="descripcion-equipo">Descripción del problema con el equipo de cómputo:</label>
-                        <textarea class="form-control" id="descripcion-equipo" name="descripcion-equipo" placeholder="Descripción del problema con el equipo de cómputo" required></textarea>
+                        <textarea class="form-control" id="descripcion-equipo" name="descripcion-equipo" placeholder="Descripción del problema con el equipo de cómputo" ></textarea>
                     </div>
 
                     <!-- Formulario para correo -->
@@ -64,22 +64,55 @@
 </div>
 
 <script>
-// Función para mostrar el formulario correspondiente según la categoría seleccionada
 function mostrarFormulario() {
     var categoria = document.getElementById("categoria").value;
 
-    // Ocultar todos los formularios
-    document.getElementById("form-accesorios").style.display = "none";
-    document.getElementById("form-equipo").style.display = "none";
-    document.getElementById("form-correo").style.display = "none";
+    // Obtener los formularios
+    var formAccesorios = document.getElementById("form-accesorios");
+    var formEquipo = document.getElementById("form-equipo");
+    var formCorreo = document.getElementById("form-correo");
 
-    // Mostrar el formulario correspondiente
-    if (categoria == "accesorios") {
-        document.getElementById("form-accesorios").style.display = "block";
-    } else if (categoria == "equipo") {
-        document.getElementById("form-equipo").style.display = "block";
-    } else if (categoria == "correo") {
-        document.getElementById("form-correo").style.display = "block";
+    // Ocultar todos los formularios
+    formAccesorios.style.display = "none";
+    formEquipo.style.display = "none";
+    formCorreo.style.display = "none";
+
+    // Deshabilitar required en todos los campos
+    deshabilitarRequeridos(formAccesorios);
+    deshabilitarRequeridos(formEquipo);
+    deshabilitarRequeridos(formCorreo);
+
+    // Mostrar y habilitar required solo en el formulario seleccionado
+    if (categoria === "accesorios") {
+        formAccesorios.style.display = "block";
+        habilitarRequeridos(formAccesorios);
+    } else if (categoria === "equipo") {
+        formEquipo.style.display = "block";
+        habilitarRequeridos(formEquipo);
+    } else if (categoria === "correo") {
+        formCorreo.style.display = "block";
+        habilitarRequeridos(formCorreo);
     }
 }
+
+// Función para deshabilitar el atributo required
+function deshabilitarRequeridos(form) {
+    var inputs = form.querySelectorAll("input, textarea, select");
+    inputs.forEach(function(input) {
+        input.removeAttribute("required");
+    });
+}
+
+// Función para habilitar el atributo required
+function habilitarRequeridos(form) {
+    var inputs = form.querySelectorAll("input, textarea, select");
+    inputs.forEach(function(input) {
+        input.setAttribute("required", "required");
+    });
+}
+document.querySelector("form-accesorios").addEventListener("submit", function(event) {
+    console.log("Formulario enviado a:", this.action);
+});
+
 </script>
+

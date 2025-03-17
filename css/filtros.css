@@ -1,0 +1,90 @@
+        /* Switch 4 Specific Style Start */
+
+/* Estilo general del checkbox */
+.input_wrapper {
+    width: 30px; /* Reducción del tamaño del contenedor a la mitad */
+    height: 15px; /* Reducción de la altura del contenedor a la mitad */
+    position: relative;
+    cursor: pointer;
+    border-radius: 30px;
+    background-color: #ccc;
+  }
+  
+  /* Estilo del checkbox antes de la animación */
+  .input_wrapper input[type="checkbox"] {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #f44336; /* Rojo de fondo cuando no está marcado */
+    border-radius: 30px;
+    position: absolute;
+    outline: 0;
+    transition: background 0.2s ease-in-out;
+  }
+  
+  /* Thumb (la parte que se mueve dentro del checkbox) */
+  .input_wrapper input[type="checkbox"]:after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 9px; /* Tamaño del thumb a la mitad */
+    height: 9px; /* Tamaño del thumb a la mitad */
+    background: #dfeaec;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* Estilo cuando el checkbox está marcado */
+  .input_wrapper input[type="checkbox"]:checked {
+    background: #4caf50; /* Verde de fondo cuando está marcado */
+  }
+  
+  /* Movimiento del thumb cuando se marca el checkbox */
+  .input_wrapper input[type="checkbox"]:checked:after {
+    left: calc(100% - 12px); /* Mueve el thumb a la derecha */
+  }
+  
+  /* Opcional: Estilo para los iconos (check o X) */
+  .input_wrapper .is_checked {
+    width: 10px; /* Reducción del tamaño del icono */
+    height: 10px; /* Reducción del tamaño del icono */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .input_wrapper .is_unchecked {
+    width: 10px; /* Reducción del tamaño del icono */
+    height: 10px; /* Reducción del tamaño del icono */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    transition: transform 0.3s ease;
+  }
+  
+  /* Cuando el checkbox está marcado, activa la animación para el check */
+  .input_wrapper input[type="checkbox"]:checked + .is_checked {
+    transform: translate(-50%, -50%) scale(1); /* Muestra el check */
+  }
+  
+  .input_wrapper input[type="checkbox"]:checked ~ .is_unchecked {
+    transform: translate(-50%, -50%) scale(0); /* Oculta el "X" */
+  }
+  
+          /* Animación para prioridad urgente */
+          @keyframes parpadeo {
+              0% { color: red; }
+              50% { color: black; }
+              100% { color: red; }
+          }
+          .urgente {
+              animation: parpadeo 1s infinite;
+              font-weight: bold;
+          }

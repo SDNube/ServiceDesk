@@ -36,7 +36,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
-    document.querySelectorAll('.modal form').forEach((form) => {
+    document.querySelectorAll('.modalEdicionComputadora form').forEach((form) => {
         form.addEventListener('submit', function (e) {
             e.preventDefault(); // Prevenir el envío normal del formulario
             var formData = new FormData(this); // Crear un objeto FormData con los datos del formulario
