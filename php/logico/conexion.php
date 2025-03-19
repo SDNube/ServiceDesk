@@ -1,6 +1,6 @@
 <?php
 // Conexión a la base de datos
-$modo_local = true; // Cambia a false cuando subas a InfinityFree
+$modo_local = false; // Cambia a false cuando subas a InfinityFree
 
 if ($modo_local) {
     // Configuración para XAMPP (local)
@@ -10,10 +10,10 @@ if ($modo_local) {
     $database = "servicedesk"; // Nombre de tu BD en local
 } else {
     // Configuración para InfinityFree
-    $servername = "sql111.infinityfree.com";
-    $username = "if0_38412249"; // Usuario de InfinityFree
-    $password = "tu_contraseña"; // Contraseña de InfinityFree
-    $database = "if0_38412249_service"; // Nombre de la BD en InfinityFree
+    $servername = "147.79.103.72";
+    $username = "u419414544"; // Usuario de InfinityFree
+    $password = "Puntoactivo.23"; // Contraseña de InfinityFree
+    $database = "u419414544_intranet"; // Nombre de la BD en InfinityFree
 }
 
 // Crear conexión
