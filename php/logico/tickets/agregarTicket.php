@@ -4,7 +4,8 @@ session_start();
 include('../conexion.php'); // Asegúrate de poner la ruta correcta de tu archivo de conexión
 date_default_timezone_set('America/Mexico_City');
 
-// Recibir los datos del formulario
+
+
 
 $problema = $_POST['problema'];
 $descripcion = $_POST['descripcion'];
@@ -23,8 +24,6 @@ $fecha_creacion = date('Y-m-d H:i:s');
 $fecha_actualizacion = date('Y-m-d H:i:s');
 $asignado_id = 11;
 
-// Verificar si la variable de sesión tiene un valor válido
-echo "ID de sesión: " . $nombreCompleto . "<br>";
 
 // Obtener el departamento del usuario basado en la sesión
 $usuario_query = "SELECT departamento FROM datos_usuarios WHERE id_user = '$nombreCompleto'";

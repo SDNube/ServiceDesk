@@ -1,73 +1,104 @@
-<?php
-include '../../logico/conexion.php';
+<div class="modal fade" id="ticketSolicitudEquipo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ticket Solicitud Equipo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="../../logico/tickets/agregarTicket.php" method="POST" onsubmit="unirCampos()">
+                    <!-- Campo de selección de categoría -->
+                    <div class="form-group">
+                        <label for="problema">Selecciona una categoría:</label>
+                        <select class="form-control" id="problema" name="problema" onchange="mostrarFormulario()">
+                            <option value="">Selecciona...</option>
+                            <option value="accesorios">Accesorios</option>
+                            <option value="equipo">Equipo de cómputo</option>
+                            <option value="correo">Correo</option>
+                        </select>
+                    </div>
 
-header('Content-Type: application/json');  // Asegúrate de enviar el encabezado correcto para JSON
+                    <!-- Formulario para accesorios -->
+                    <div id="form-accesorios" class="form-group" style="display: none;">
+                        <label for="problemaAccesorio">Selecciona el accesorio:</label>
+                        <select class="form-control" id="problemaAccesorio">
+                            <option value="mouse">Mouse</option>
+                            <option value="teclado">Teclado</option>
+                            <option value="pad">Pad</option>
+                            <option value="case">Case para celular</option>
+                        </select>
+                    </div>
 
-// Verificamos que se haya enviado el 'idTicket' y 'path'
-if (isset($_GET['idTicket']) && isset($_GET['path'])) {
-    $idTicket = $_GET['idTicket'];
-    $path = $_GET['path'];  // Recibimos el 'path' desde el JS
+                    <!-- Formulario para equipo de cómputo -->
+                    <div id="form-equipo" class="form-group" style="display: none;">
+                        <label for="descripcion-equipo">Descripción del problema con el equipo de cómputo:</label>
+                        <textarea class="form-control" id="descripcion-equipo" placeholder="Descripción del problema"></textarea>
+                    </div>
 
-    // Consulta común para obtener los datos del ticket
-    $query = "SELECT problema, descripcion_corta, mensaje, id FROM tickets WHERE id = '$idTicket'";
-    $result = $conn->query($query);
+                    <!-- Formulario para correo -->
+                    <div id="form-correo" class="form-group" style="display: none;">
+                        <label for="nombre">Nombre(s):</label>
+                        <input type="text" class="form-control" id="nombre" placeholder="Ingresa el nombre(s)">
+                        <label for="apellido">Apellidos:</label>
+                        <input type="text" class="form-control" id="apellido" placeholder="Ingresa los apellidos">
+                    </div>
 
-    if ($result->num_rows > 0) {
-        $ticket = $result->fetch_assoc();
-        
-        // Si el path es 'Computadora'
-        if ($path == 'Computadora') {
-            // Extraemos las pruebas del campo mensaje
-            $pruebas = $ticket['mensaje']; // Solo lo que está después de "Pruebas:"
-            
-            // Armamos la respuesta
-            $response = [
-                'problema' => $ticket['problema'],
-                'descripcion_corta' => $ticket['descripcion_corta'],
-                'pruebas' => $pruebas,
-                
-            ];
-        }
-        // Si el path es 'Plataforma'
-        elseif ($path == 'Plataforma') {
-            // Extraemos los datos del campo 'mensaje' usando expresiones regulares
-            preg_match('/Problema:\s*(.*)/', $ticket['mensaje'], $problema);
-            preg_match('/Descripción:\s*(.*)/', $ticket['mensaje'], $descripcion);
-            preg_match('/ID Cliente:\s*(\d+)/', $ticket['mensaje'], $idCliente);
-            preg_match('/CP Origen:\s*(\d+)/', $ticket['mensaje'], $cpOrigen);
-            preg_match('/CP Destino:\s*(\d+)/', $ticket['mensaje'], $cpDestino);
-            preg_match('/Largo:\s*(\d+)\s*cm/', $ticket['mensaje'], $largo);
-            preg_match('/Alto:\s*(\d+)\s*cm/', $ticket['mensaje'], $alto);
-            preg_match('/Ancho:\s*(\d+)\s*cm/', $ticket['mensaje'], $ancho);
-            preg_match('/Peso:\s*(\d+)\s*kg/', $ticket['mensaje'], $peso);
+                    <!-- Campo oculto donde se unirá toda la descripción -->
+                    <input type="hidden" name="descripcion" id="descripcion">
 
-            // Armamos la respuesta para 'Plataforma'
-            $response = [
-                'id' => $ticket['id'],
-                'problema' => isset($problema[1]) ? $problema[1] : '',
-                'descripcion_corta' => isset($descripcion[1]) ? $descripcion[1] : '',
-                'id_cliente' => isset($idCliente[1]) ? $idCliente[1] : '',
-                'cp_origen' => isset($cpOrigen[1]) ? $cpOrigen[1] : '',
-                'cp_destino' => isset($cpDestino[1]) ? $cpDestino[1] : '',
-                'largo' => isset($largo[1]) ? $largo[1] : '',
-                'alto' => isset($alto[1]) ? $alto[1] : '',
-                'ancho' => isset($ancho[1]) ? $ancho[1] : '',
-                'peso' => isset($peso[1]) ? $peso[1] : '',
-                'pruebas' => isset($ticket['mensaje']) ? $ticket['mensaje'] : '' // Mostramos todo el mensaje
-            ];
-        } else {
-            // Si el path no es 'Computadora' ni 'Plataforma', enviamos un error
-            $response = ['error' => 'Path no válido'];
-        }
-    } else {
-        // Si no se encuentra el ticket
-        $response = ['error' => 'Ticket no encontrado'];
+                    <!-- Campo oculto para el origen del modal -->
+                    <input type="hidden" name="modalOrigin" value="Solicitud">
+
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function mostrarFormulario() {
+    var problema = document.getElementById("problema").value;
+
+    // Obtener los formularios
+    var formAccesorios = document.getElementById("form-accesorios");
+    var formEquipo = document.getElementById("form-equipo");
+    var formCorreo = document.getElementById("form-correo");
+
+    // Ocultar todos los formularios
+    formAccesorios.style.display = "none";
+    formEquipo.style.display = "none";
+    formCorreo.style.display = "none";
+
+    // Mostrar solo el formulario relacionado
+    if (problema === "accesorios") {
+        formAccesorios.style.display = "block";
+    } else if (problema === "equipo") {
+        formEquipo.style.display = "block";
+    } else if (problema === "correo") {
+        formCorreo.style.display = "block";
     }
-} else {
-    // Si no se envían los parámetros 'idTicket' o 'path'
-    $response = ['error' => 'ID del ticket o path no proporcionados'];
 }
 
-// Devolvemos la respuesta en formato JSON
-echo json_encode($response);
-?>
+function unirCampos() {
+    var problema = document.getElementById("problema").value;
+    var accesorio = document.getElementById("problemaAccesorio") ? document.getElementById("problemaAccesorio").value : "";
+    var equipoDesc = document.getElementById("descripcion-equipo") ? document.getElementById("descripcion-equipo").value : "";
+    var nombre = document.getElementById("nombre") ? document.getElementById("nombre").value : "";
+    var apellido = document.getElementById("apellido") ? document.getElementById("apellido").value : "";
+
+    var descripcion = "Categoría: " + problema + "\n";
+    
+    if (problema === "accesorios") {
+        descripcion += "Accesorio: " + accesorio + "\n";
+    } else if (problema === "equipo") {
+        descripcion += "Descripción del equipo: " + equipoDesc + "\n";
+    } else if (problema === "correo") {
+        descripcion += "Nombre: " + nombre + "\nApellido: " + apellido + "\n";
+    }
+
+    document.getElementById("descripcion").value = descripcion;
+}
+</script>
