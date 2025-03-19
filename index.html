@@ -17,7 +17,7 @@
             <div class="fadeIn first">
                 <img src="imagenes/icono_login.png" id="icon" alt="User Icon" />
                 <h1>Bienvenido</h1>
-                <h2>test de h2</h2>
+                
                 <h2>Sistema de tickets de PuntoActivo</h2>
             </div>
 
@@ -59,7 +59,7 @@
                     })
                     .catch(error => {
                         console.error('Error al enviar la solicitud:', error);
-                        Swal.alert({
+                        Swal.fire({
                             icon: 'error',
                             title: '¡Error!',
                             text: 'Hubo un problema al procesar la solicitud.'

@@ -1,10 +1,13 @@
 <?php
 session_start(); // Inicia la sesión
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 include '../conexion.php';
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
+header('Content-Type: application/json');
 
 $response = array(); // Array para la respuesta
 
@@ -59,7 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $response['message'] = 'Usuario no encontrado.';
     }
 }
-
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 // Enviar la respuesta en formato JSON
 echo json_encode($response);
 
