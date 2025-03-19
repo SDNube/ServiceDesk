@@ -1,0 +1,8 @@
+{
+    "name": "roberto/servicedesk",
+    "description": "Un proyecto PHP sin dependencias externas",
+    "require": {
+      "php": "^8.0"
+    }
+}
+  
