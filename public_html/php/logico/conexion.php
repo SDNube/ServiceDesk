@@ -10,7 +10,7 @@ if ($modo_local) {
     $database = "servicedesk"; // Nombre de tu BD en local
 } else {
     // Configuración para InfinityFree
-    $servername = "147.79.103.72";
+    $servername = "localhost";
     $username = "u419414544_intranet"; // Usuario de InfinityFree
     $password = "Puntoactivo.23"; // Contraseña de InfinityFree
     $database = "u419414544_intranet"; // Nombre de la BD en InfinityFree

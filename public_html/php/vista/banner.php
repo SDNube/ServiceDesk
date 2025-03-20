@@ -37,29 +37,29 @@ $nombreCompleto = $_SESSION['nombreCompleto']; // Asegúrate de que 'username' e
             <ul class="navbar-nav">
                 <?php if ($id_roll == 1): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/tickets/tickets.php">Tickets</a>
+                        <a class="nav-link" href="/php/vista/tickets/tickets.php">Tickets</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios.php">Usuarios</a>
+                        <a class="nav-link" href="/php/vista/usuarios.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/equipo/altaEquipo.php">Equipo de computo</a>
+                        <a class="nav-link" href="/php/vista/equipo/altaEquipo.php">Equipo de computo</a>
                     </li>
                 <?php endif; ?>
 
                 <?php if ($id_roll == 2): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/tickets/ticketscliente.php">Tickets de soporte</a>
+                        <a class="nav-link" href="/public_html/php/vista/tickets/ticketscliente.php">Tickets de soporte</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/test.php" hidden>miUSuario</a>
+                        <a class="nav-link" href="/php/vista/usuarios/test.php" hidden>miUSuario</a>
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                        <a class="nav-link" href="/ServiceDesk/php/vista/usuarios/miUSuario.php"><?php echo htmlspecialchars($nombreCompleto); ?><span class="sr-only">(actual)</span></a>
+                        <a class="nav-link" href="/php/vista/usuarios/miUSuario.php"><?php echo htmlspecialchars($nombreCompleto); ?><span class="sr-only">(actual)</span></a>
                 </li>
             </ul>
-            <form class="form-inline ml-auto" action="/ServiceDesk/php/logico/usuarios/logout.php" method="POST">
+            <form class="form-inline ml-auto" action="/php/logico/usuarios/logout.php" method="POST">
                 <button class="btn btn-danger my-2 my-sm-0" type="submit">Cerrar sesión</button>
             </form>
         </div>
