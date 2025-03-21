@@ -31,7 +31,18 @@ JOIN datos_usuarios a ON t.asignado = a.id_user  -- Para obtener los datos del '
 ;
 ";
 
-$result = $conn->query($query);
+
+$query = "SELECT u.id, d.nombre, d.paterno 
+          FROM users u 
+          JOIN datos_usuarios d ON u.id = d.id_user 
+          WHERE u.id_rol = 2";
+$result = mysqli_query($conn, $query);
+
+$users = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $users[] = $row;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -46,6 +57,7 @@ $result = $conn->query($query);
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../../css/filtros.css">
 </head>
 <body>
 
@@ -53,26 +65,150 @@ $result = $conn->query($query);
     
     <h1>Tickets</h1>
     <br>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ticketTiComputadora">
-        TI - Computadora
-    </button>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ticketSistemaPlataforma">
-        Sistema - Plataforma
-    </button>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ticketSolicitudEquipo">
-        Solicitud - Equipo
-    </button>
+    <div id="filters" style="display: none;">
+        <div class="row my-3">
+            <!-- Filtro por Status -->
+            <div class="col-md-4">
+                <h5>Status:</h5>
+                <ul class="list-unstyled">
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="Nuevo" checked>
+                        </div>
+                        <span class="ml-2">Nuevo</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="En Proceso" checked>
+                        </div>
+                        <span class="ml-2">En Proceso</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="Resuelto">
+                        </div>
+                        <span class="ml-2">Resuelto</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="Cerrado">
+                        </div>
+                        <span class="ml-2">Cerrado</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="En Pausa" checked>
+                        </div>
+                        <span class="ml-2">En Pausa</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="Cancelado">
+                        </div>
+                        <span class="ml-2">Cancelado</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="Actualizado" checked>
+                        </div>
+                        <span class="ml-2">Actualizado</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-status" value="Comentario" checked>
+                        </div>
+                        <span class="ml-2">Comentario</span>
+                    </li>
+                </ul>
+            </div>
 
-    
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <button class="btn btn-primary" id="toggleFilters">Filtros</button>
-    <button class="btn btn-success" id="exportExcel" hidden>Exportar a Excel</button>
+            <!-- Filtro por Prioridad -->
+            <div class="col-md-4">
+                <h5>Prioridad:</h5>
+                <ul class="list-unstyled">
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-priority" value="Urgente" checked>
+                        </div>
+                        <span class="ml-2 text-danger">Urgente</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-priority" value="Alta" checked>
+                        </div>
+                        <span class="ml-2 text-warning">Alta</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-priority" value="Media" checked>
+                        </div>
+                        <span class="ml-2 text-success">Media</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-priority" value="Baja" checked>
+                        </div>
+                        <span class="ml-2 text-muted">Baja</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Filtro por Path -->
+            <div class="col-md-4">
+                <h5>Path:</h5>
+                <ul class="list-unstyled">
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-path" value="Computadora" checked>
+                        </div>
+                        <span class="ml-2">Computadora</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-path" value="Plataforma" checked>
+                        </div>
+                        <span class="ml-2">Plataforma</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-2">
+                        <div class="input_wrapper">
+                            <input type="checkbox" class="filter-path" value="Solicitud" checked>
+                        </div>
+                        <span class="ml-2">Solicitud</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Nueva columna para Filtrar por Usuario Asignado -->
+            <div class="col-md-4">
+                <h5>Asignado a:</h5>
+                <select id="filter-user" class="form-control">
+                    <option value="">Todos</option>
+                </select>
+            </div>
+        </div>
+    </div>
+<p></p>
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex justify-content-start">
+            <div class="input-group" style="max-width: 300px;">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                </div>
+                <input id="buscador" class="form-control" type="text" placeholder="Buscar por ID...">
+            </div>
+            
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 d-flex justify-content-start">
+            <div class="input-group" style="max-width: 300px;">
+                <div class="input-group-prepend">
+                <button id="toggle-filters" class="btn btn-primary mb-3">Mostrar Filtros</button>
+                </div>
+                
+            </div>
+        </div>
+    </div>
     <div id="filterBanner" class="mt-3 p-3 border rounded" style="display: none; background: #f8f9fa;">
     <div class="row">
         <div class="col-md-3">
@@ -183,88 +319,4 @@ include '../../modales/tickets/modalSolicitudEquipo.php';
 
 </body>
 </html>
-
-<script>
-$(document).ready(function() {
-    // Mostrar u ocultar los filtros
-    $('#toggleFilters').click(function() {
-        $('#filterBanner').toggle();
-    });
-
-    // Función para aplicar filtros
-    $('#applyFilters').click(function() {
-        let filters = {
-            path: $('#filterPath').val(),
-            usuario: $('#filterUsuario').val().toLowerCase(),
-            fecha: $('#filterFecha').val(),
-            prioridad: $('#filterPrioridad').val(),
-            status: $('#filterStatus').val(),
-            statusText: $('#filterStatusText').val().toLowerCase()
-        };
-
-        // Filtrar las filas de la tabla
-        $('#ticketsTable tbody tr').each(function() {
-            let row = $(this);
-            let isValid = true;
-
-            // Revisar cada columna en función de los filtros
-            row.find('td').each(function(index) {
-                let cellText = $(this).text().toLowerCase();
-
-                // Filtrar por cada campo según corresponda
-                switch (index) {
-                    case 0: // ID (no filtrar)
-                        break;
-                    case 1: // PATH
-                        if (filters.path && !cellText.includes(filters.path.toLowerCase())) {
-                            isValid = false;
-                        }
-                        break;
-                    case 3: // Usuario
-                        if (filters.usuario && !cellText.includes(filters.usuario)) {
-                            isValid = false;
-                        }
-                        break;
-                    case 4: // Fecha creación
-                        if (filters.fecha && !cellText.includes(filters.fecha)) {
-                            isValid = false;
-                        }
-                        break;
-                    case 6: // Prioridad
-                        if (filters.prioridad && !cellText.includes(filters.prioridad.toLowerCase())) {
-                            isValid = false;
-                        }
-                        break;
-                    case 7: // Status
-                        if (filters.status && !cellText.includes(filters.status.toLowerCase())) {
-                            isValid = false;
-                        }
-                        break;
-                    case 9: // Asignado
-                        if (filters.statusText && !cellText.includes(filters.statusText)) {
-                            isValid = false;
-                        }
-                        break;
-                }
-            });
-
-            // Mostrar u ocultar la fila según si es válida o no
-            if (isValid) {
-                row.show();
-            } else {
-                row.hide();
-            }
-        });
-    });
-
-    // Exportar a Excel (función como estaba antes)
-    $('#exportExcel').click(function() {
-        let table = document.getElementById('ticketsTable');
-        let wb = XLSX.utils.table_to_book(table, {sheet: "Tickets"});
-        XLSX.writeFile(wb, 'tickets.xlsx');
-    });
-});
-}
-
-
-</script>
+<script src="../../../js/filtros.js"></script>

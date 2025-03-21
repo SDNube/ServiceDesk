@@ -80,7 +80,7 @@ $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(0, 10, utf8_decode('Condiciones de Uso'), 0, 1, 'L');
 $pdf->SetFont('Arial', '', 10);
 $pdf->MultiCell(0, 10, utf8_decode(
-    "1. El equipo asignado es propiedad de Puntoacti y se encuentra bajo el resguardo de " . 
+    "1. El equipo asignado es propiedad de Puntoactivo y se encuentra bajo el resguardo de " . 
     $usuario['nombre'] . ' ' . $usuario['paterno'] . ' ' . $usuario['materno'] . ".\n" .
     "2. El responsable deberá usar el equipo de forma adecuada, cuidando la integridad física y funcional del mismo.\n" .
     "3. El equipo debe ser utilizado exclusivamente para las actividades laborales o académicas relacionadas con la empresa/institución.\n" .

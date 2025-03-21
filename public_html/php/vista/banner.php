@@ -4,7 +4,7 @@ session_start(); // Iniciar la sesión
 // Verificar si el usuario está autenticado
 if (!isset($_SESSION['id_rol'])) {
     // Redirigir a la página de inicio de sesión o mostrar un mensaje de error
-    header("Location: ../../../logico/usuarios/login.php");
+    header("Location: /php/logico/usuarios/login.php");
     exit();
 }
 
@@ -37,26 +37,26 @@ $nombreCompleto = $_SESSION['nombreCompleto']; // Asegúrate de que 'username' e
             <ul class="navbar-nav">
                 <?php if ($id_roll == 1): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/php/vista/tickets/tickets.php">Tickets</a>
+                        <a class="nav-link" href="https://intranet.puntoactivo.mx/php/vista/tickets/tickets.php">Tickets</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/php/vista/usuarios.php">Usuarios</a>
+                        <a class="nav-link" href="https://intranet.puntoactivo.mx/php/vista/usuarios.php">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/php/vista/equipo/altaEquipo.php">Equipo de computo</a>
+                        <a class="nav-link" href="https://intranet.puntoactivo.mx/php/vista/equipo/altaEquipo.php">Equipo de computo</a>
                     </li>
                 <?php endif; ?>
 
                 <?php if ($id_roll == 2): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/public_html/php/vista/tickets/ticketscliente.php">Tickets de soporte</a>
+                        <a class="nav-link" href="https://intranet.puntoactivo.mx/php/vista/tickets/ticketscliente.php">Tickets de soporte</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/php/vista/usuarios/test.php" hidden>miUSuario</a>
+                        <a class="nav-link" href="https://intranet.puntoactivo.mx/php/vista/usuarios/test.php" hidden>miUSuario</a>
                     </li>
                 <?php endif; ?>
                 <li class="nav-item">
-                        <a class="nav-link" href="/php/vista/usuarios/miUSuario.php"><?php echo htmlspecialchars($nombreCompleto); ?><span class="sr-only">(actual)</span></a>
+                        <a class="nav-link" href="https://intranet.puntoactivo.mx/php/vista/usuarios/miUsuario.php"><?php echo htmlspecialchars($nombreCompleto); ?><span class="sr-only">(actual)</span></a>
                 </li>
             </ul>
             <form class="form-inline ml-auto" action="/php/logico/usuarios/logout.php" method="POST">

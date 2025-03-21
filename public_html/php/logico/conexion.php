@@ -1,6 +1,6 @@
 <?php
 // Conexión a la base de datos
-$modo_local = false ; // Cambia a false cuando subas a InfinityFree
+$modo_local = true ; // Cambia a false cuando subas a InfinityFree
 
 if ($modo_local) {
     // Configuración para XAMPP (local)

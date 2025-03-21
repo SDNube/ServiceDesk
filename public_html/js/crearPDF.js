@@ -8,7 +8,7 @@ $(document).ready(function() {
 
         // Realizar la solicitud AJAX
         $.ajax({
-            url: '../../logico/equipo/crearPdf.php',  // Ruta al archivo PHP
+            url: 'https://intranet.puntoactivo.mx/php/logico/equipo/crearPDF.php',  // Ruta al archivo PHP
             type: 'GET',  // Usamos GET para enviar los datos
             data: {
                 id_equipo: idEquipo,

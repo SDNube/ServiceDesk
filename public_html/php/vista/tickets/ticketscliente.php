@@ -26,7 +26,7 @@ $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
             LEFT JOIN estado e ON t.status = e.ID
             LEFT JOIN datos_usuarios u ON t.asignado = u.id_user
             WHERE t.usuario = '$idUsuario' 
-            AND e.vista NOT IN ('Cancelado', 'Cerrado', 'Resuelto')"; // Filtrando los estados no deseados
+            AND e.vista NOT IN ('tarta')"; // Filtrando los estados no deseados
 
     $result = $conn->query($query);
 ?>
@@ -79,7 +79,7 @@ $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
                 </li>
                 <li class="d-flex align-items-center mb-2">
                     <div class="input_wrapper">
-                        <input type="checkbox" class="filter-status" value="En Proceso" checked>
+                        <input type="checkbox" class="filter-status" value="En proceso" checked>
                     </div>
                     <span class="ml-2">En Proceso</span>
                 </li>
@@ -126,29 +126,35 @@ $idUsuario = $_SESSION['id']; // Obtener el ID del usuario de la sesión
         <div class="col-md-4">
             <h5>Prioridad:</h5>
             <ul class="list-unstyled">
+            <li class="d-flex align-items-center mb-2">
+                    <div class="input_wrapper">
+                        <input type="checkbox" class="filter-priority" value="Critica" checked>
+                    </div>
+                    <span class="ml-2 ">Critica</span>
+                </li>
                 <li class="d-flex align-items-center mb-2">
                     <div class="input_wrapper">
                         <input type="checkbox" class="filter-priority" value="Urgente" checked>
                     </div>
-                    <span class="ml-2 text-danger">Urgente</span>
+                    <span class="ml-2 ">Urgente</span>
                 </li>
                 <li class="d-flex align-items-center mb-2">
                     <div class="input_wrapper">
                         <input type="checkbox" class="filter-priority" value="Alta" checked>
                     </div>
-                    <span class="ml-2 text-warning">Alta</span>
+                    <span class="ml-2 ">Alta</span>
                 </li>
                 <li class="d-flex align-items-center mb-2">
                     <div class="input_wrapper">
                         <input type="checkbox" class="filter-priority" value="Media" checked>
                     </div>
-                    <span class="ml-2 text-success">Media</span>
+                    <span class="ml-2 ">Media</span>
                 </li>
                 <li class="d-flex align-items-center mb-2">
                     <div class="input_wrapper">
                         <input type="checkbox" class="filter-priority" value="Baja" checked>
                     </div>
-                    <span class="ml-2 text-muted">Baja</span>
+                    <span class="ml-2 ">Baja</span>
                 </li>
             </ul>
         </div>

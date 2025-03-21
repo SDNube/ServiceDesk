@@ -134,7 +134,7 @@
                         </tbody>
                     </table>
                 </div>
-                <script src="/ServiceDesk/js/usuariosAdmin.js"></script>
+                <script src="https://intranet.puntoactivo.mx/js/usuariosAdmin.js"></script>
         </body>
     </html>
 
